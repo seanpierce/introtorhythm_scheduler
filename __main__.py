@@ -16,7 +16,7 @@ def get_show():
     Calls the scheduling API to retrieve the currently scheduled show.
     """
 
-    if bool(config.DEBUG): 
+    if bool(config.DEBUG):
         return {
             'day': datetime.datetime.now().weekday(),
             'start_time': datetime.datetime.now().hour,
@@ -25,7 +25,7 @@ def get_show():
         }
 
     url = "%s/api/schedule/show" %config.HOST
-    return requests.get(url).json()
+    return requests.get(url, verify=False).json()
 
 
 def delete_existing_config():
@@ -107,6 +107,12 @@ def start_ezstream():
     os.system(command)
 
 
+def set_config_permissions():
+    path_to_config = "%s/scheduler.xml" %os.path.dirname(os.path.abspath(__file__))
+    command = "chmod 755 %s" %path_to_config
+    os.system(command)
+
+
 if __name__ == "__main__":
     SHOW = get_show()
 
@@ -116,4 +122,5 @@ if __name__ == "__main__":
 
     delete_existing_config()
     create_ezstream_config(SHOW['audio'])
+    set_config_permissions()
     start_ezstream()
